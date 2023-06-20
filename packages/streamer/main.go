@@ -1,34 +1,29 @@
 package main
 
 import (
-	"github.com/gordonklaus/portaudio"
+	"github.com/gofiber/fiber/v2"
 	"log"
+	"os"
 )
 
 const sampleRate = 44100
 const seconds = 1
 
 func main() {
-	err := portaudio.Initialize()
-	if err != nil {
-		log.Print(err)
-		return
-	}
-	defer func() {
-		err := portaudio.Terminate()
-		if err != nil {
-			log.Print(err)
+	app := fiber.New()
+	file, _ := os.Open("music/music1.mp3")
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		for {
+			buffer := make([]byte, 100)
+			_, err := file.Read(buffer)
+			if err != nil {
+				break
+			}
+			c.Write(buffer)
 		}
-	}()
-	buffer := make([]float32, sampleRate*seconds)
-	stream, err := portaudio.OpenDefaultStream(1, 0, sampleRate, len(buffer), func(in []float32) {
-		for i := range buffer {
-			buffer[i] = in[i]
-		}
+		return nil
 	})
-	if err != nil {
-		panic(err)
-	}
-	stream.Start()
-	defer stream.Close()
+
+	log.Fatal(app.Listen(":3000"))
 }
