@@ -1,0 +1,19 @@
+{
+  "name": "streamerjs",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "author": "chirag3003",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "NODE_ENV=development nodemon --watch 'src/**/*.ts' --exec node --loader @esbuild-kit/esm-loader src/index.ts",
+    "start": "node --loader @esbuild-kit/esm-loader src/index.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@esbuild-kit/esm-loader": "^2.5.5"
+  }
+}
