@@ -13,9 +13,7 @@
         "lint:fix": "eslint --ext .ts . --fix",
         "start": "node --loader @esbuild-kit/esm-loader src/index.ts"
     },
-    "dependencies": {
-        "express": "^4.18.2"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@bravo68web/eslint-config": "^1.1.0",
         "@bravo68web/prettier-config": "^1.1.0",
