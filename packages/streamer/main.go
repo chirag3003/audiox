@@ -3,10 +3,10 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"time"
-
 	"github.com/gorilla/websocket"
+	"net/http"
+	"os"
+	"time"
 )
 
 var upgrader = websocket.Upgrader{
@@ -20,24 +20,30 @@ func main() {
 			return true
 		}
 		conn, _ := upgrader.Upgrade(w, r, nil) // error ignored for sake of simplicity
-
+		file, err := os.Open("music/output.opus")
+		if err != nil {
+			return
+		}
+		// Read message from browser
+		buffer := make([]byte, 100)
+		_, _, err = conn.ReadMessage()
+		if err != nil {
+			conn.Close()
+			return
+		}
+		// Print the message to the console
+		file.Read(buffer)
 		for {
-			// Read message from browser
-			msgType, msg, err := conn.ReadMessage()
+			// Write message back to browser
+			_, err := file.Read(buffer)
 			if err != nil {
-				conn.Close()
+				break
+			}
+			fmt.Println(string(buffer))
+			if err = conn.WriteMessage(websocket.BinaryMessage, buffer); err != nil {
 				return
 			}
-			// Print the message to the console
-			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
-
-			// Write message back to browser
-			for {
-				if err = conn.WriteMessage(msgType, msg); err != nil {
-					return
-				}
-				time.Sleep(time.Second * 5)
-			}
+			time.Sleep(time.Millisecond * 2)
 		}
 	})
 
